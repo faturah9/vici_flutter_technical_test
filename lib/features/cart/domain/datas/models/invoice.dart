@@ -35,7 +35,7 @@ class InvoiceItem {
   final DateTime date;
   final int quantity;
   final double vat;
-  final double unitPrice;
+  final int unitPrice;
 
   const InvoiceItem({
     required this.description,

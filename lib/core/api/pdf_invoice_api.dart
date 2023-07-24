@@ -191,11 +191,11 @@ class PdfInvoiceApi {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                buildText(
-                  title: 'Net total',
-                  value: UtilsPdf.formatPrice(netTotal),
-                  unite: true,
-                ),
+                // buildText(
+                //   title: 'Net total',
+                //   value: UtilsPdf.formatPrice(netTotal),
+                //   unite: true,
+                // ),
                 buildText(
                   title: 'Vat ${vatPercent * 100} %',
                   value: UtilsPdf.formatPrice(vat),

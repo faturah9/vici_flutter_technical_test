@@ -39,71 +39,70 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        surfaceTintColor: Colors.white,
-        title: Text(
-          'Cart',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w500,
-            color: AppColors.black,
-            fontSize: 26.sp,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => Navigator.pop(context),
-        ),
-        elevation: 0,
-        actions: const [
-          GeneratePdf(),
-        ],
-      ),
-      body: BlocBuilder<CartCubit, CartState>(
-        buildWhen: (previous, current) =>
-            previous.listProcessCartModel != current.listProcessCartModel,
-        builder: (context, state) {
-          if (state is CartLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return state.listProcessCartModel!.isEmpty
-                ? const SingleChildScrollView(
-                    child: NotFoundWidget(
-                        image: 'assets/images/tracking_not_found.png',
-                        title: 'Pertanyaan Kosong',
-                        subtitle: 'Silahkan Coba Lagi Nanti'),
-                  )
-                : Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    color: AppColors.white,
-                    padding: EdgeInsets.only(left: 20.w, right: 20.w),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          AlignedGridView.count(
-                            shrinkWrap: true,
-                            physics: const ScrollPhysics(),
-                            crossAxisCount: 1,
-                            mainAxisSpacing: 12,
-                            crossAxisSpacing: 12,
-                            itemCount: state.listProcessCartModel!.length,
-                            itemBuilder: (context, index) {
-                              final item = state.listProcessCartModel![index];
-                              return itemsCard(item);
-                            },
-                          )
-                        ],
-                      ),
+    return BlocBuilder<CartCubit, CartState>(
+      buildWhen: (previous, current) =>
+          previous.listProcessCartModel != current.listProcessCartModel,
+      builder: (context, state) {
+        if (state is CartLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        return state.listProcessCartModel!.isEmpty
+            ? const SingleChildScrollView(
+                child: NotFoundWidget(
+                    image: 'assets/images/tracking_not_found.png',
+                    title: 'Pertanyaan Kosong',
+                    subtitle: 'Silahkan Coba Lagi Nanti'),
+              )
+            : Scaffold(
+                appBar: AppBar(
+                  surfaceTintColor: Colors.white,
+                  title: Text(
+                    'Cart',
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.black,
+                      fontSize: 26.sp,
                     ),
-                  );
-          }
-        },
-      ),
+                  ),
+                  backgroundColor: Colors.white,
+                  centerTitle: true,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  elevation: 0,
+                  actions: [
+                    GeneratePdf(state.listProcessCartModel!),
+                  ],
+                ),
+                body: Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  color: AppColors.white,
+                  padding: EdgeInsets.only(left: 20.w, right: 20.w),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        AlignedGridView.count(
+                          shrinkWrap: true,
+                          physics: const ScrollPhysics(),
+                          crossAxisCount: 1,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          itemCount: state.listProcessCartModel!.length,
+                          itemBuilder: (context, index) {
+                            final item = state.listProcessCartModel![index];
+                            return itemsCard(item);
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              );
+      },
     );
   }
 
@@ -195,7 +194,9 @@ class _CartPageState extends State<CartPage> {
 }
 
 class GeneratePdf extends StatefulWidget {
-  const GeneratePdf({super.key});
+  final List<ProcessItemModel> list;
+
+  const GeneratePdf(this.list, {super.key});
 
   @override
   State<GeneratePdf> createState() => _GeneratePdfState();
@@ -208,23 +209,25 @@ class _GeneratePdfState extends State<GeneratePdf> {
       icon: const Icon(Icons.picture_as_pdf),
       onPressed: () {
         // sl<CartCubit>().generatePdfEvent();
-        pdfInvoice();
+        pdfInvoice(widget.list!);
       },
     );
   }
 
-  Future<void> pdfInvoice() async {
+  Future<void> pdfInvoice(List<ProcessItemModel> list) async {
     final date = DateTime.now();
     final dueDate = date.add(const Duration(days: 7));
     final invoice = Invoice(
-      supplier: const Supplier(
-        name: 'Sarah Field',
-        address: 'Sarah Street 9, Beijing, China',
-        paymentInfo: 'https://paypal.me/sarahfieldzz',
-      ),
       customer: const Customer(
-        name: 'Apple Inc.',
-        address: 'Apple Street, Cupertino, CA 95014',
+        name: 'Kasir',
+        address:
+            'Jl. Puri Indah Raya, RT.1/RW.2, Kembangan Sel., Kec. Kembangan, Kota Jakarta Barat, Daerah Khusus Ibukota Jakarta 11610',
+      ),
+      supplier: const Supplier(
+        name: 'VICI',
+        address:
+            'Puri Indah Financial Tower, 10-11 Floor, Jl. Puri Lkr. Dalam Jl. Puri Indah Raya, RT.1/RW.2, Kembangan Sel., Kec. Kembangan, Kota Jakarta Barat, Daerah Khusus Ibukota Jakarta 11610',
+        paymentInfo: 'https://paypal.me/Vici',
       ),
       info: InvoiceInfo(
         date: date,
@@ -233,55 +236,14 @@ class _GeneratePdfState extends State<GeneratePdf> {
         number: '${DateTime.now().year}-9999',
       ),
       items: [
-        InvoiceItem(
-          description: 'Coffee',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 5.99,
-        ),
-        InvoiceItem(
-          description: 'Water',
-          date: DateTime.now(),
-          quantity: 8,
-          vat: 0.19,
-          unitPrice: 0.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Apple',
-          date: DateTime.now(),
-          quantity: 8,
-          vat: 0.19,
-          unitPrice: 3.99,
-        ),
-        InvoiceItem(
-          description: 'Mango',
-          date: DateTime.now(),
-          quantity: 1,
-          vat: 0.19,
-          unitPrice: 1.59,
-        ),
-        InvoiceItem(
-          description: 'Blue Berries',
-          date: DateTime.now(),
-          quantity: 5,
-          vat: 0.19,
-          unitPrice: 0.99,
-        ),
-        InvoiceItem(
-          description: 'Lemon',
-          date: DateTime.now(),
-          quantity: 4,
-          vat: 0.19,
-          unitPrice: 1.29,
-        ),
+        for (var item in list)
+          InvoiceItem(
+            description: item.namaProduct!,
+            date: DateTime.now(),
+            quantity: item.quantityCount!,
+            vat: 0,
+            unitPrice: item.priceCount!,
+          ),
       ],
     );
 
@@ -332,7 +294,65 @@ class _GeneratePdfState extends State<GeneratePdf> {
                   pw.Text('31.05.2021'),
                 ],
               ),
-              pw.SizedBox(height: 1 * PdfPageFormat.cm)
+              pw.SizedBox(height: 1 * PdfPageFormat.cm),
+              pw.Table(
+                border: pw.TableBorder.all(color: PdfColors.black),
+                children: [
+                  pw.TableRow(
+                    children: [
+                      pw.Padding(
+                        child: pw.Text(
+                          'INVOICE FOR PAYMENT',
+                          style: pw.TextStyle(
+                            font: font,
+                            fontSize: 24,
+                            fontWeight: pw.FontWeight.bold,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                        padding: const pw.EdgeInsets.all(20),
+                      ),
+                    ],
+                  ),
+                  ...list.map(
+                    (e) {
+                      return pw.TableRow(children: [
+                        pw.Expanded(child: pw.Text(e.namaProduct!)),
+                        pw.Expanded(child: pw.Text(e.priceCount.toString())),
+                      ]);
+                    },
+                  ),
+                  pw.TableRow(
+                    children: [
+                      pw.Padding(
+                        child: pw.Text(
+                          'Total',
+                          style: pw.TextStyle(
+                            font: font,
+                            fontSize: 24,
+                            fontWeight: pw.FontWeight.bold,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                        padding: const pw.EdgeInsets.all(20),
+                      ),
+                      pw.Padding(
+                        child: pw.Text(
+                          list.fold<int>(
+                              0, (sum, item) => sum + item.priceCount!) as String,
+                          style: pw.TextStyle(
+                            font: font,
+                            fontSize: 24,
+                            fontWeight: pw.FontWeight.bold,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                        padding: const pw.EdgeInsets.all(20),
+                      ),
+                    ],
+                  ),
+                ],
+              )
             ],
           );
         },
