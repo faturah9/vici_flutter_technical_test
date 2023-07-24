@@ -215,6 +215,9 @@ class _GeneratePdfState extends State<GeneratePdf> {
   }
 
   Future<void> pdfInvoice(List<ProcessItemModel> list) async {
+    final total = list.fold<double>(
+        0, (previousValue, element) => previousValue + element.priceCount!);
+
     final date = DateTime.now();
     final dueDate = date.add(const Duration(days: 7));
     final invoice = Invoice(
@@ -338,8 +341,7 @@ class _GeneratePdfState extends State<GeneratePdf> {
                       ),
                       pw.Padding(
                         child: pw.Text(
-                          list.fold<int>(
-                              0, (sum, item) => sum + item.priceCount!) as String,
+                          total.toString(),
                           style: pw.TextStyle(
                             font: font,
                             fontSize: 24,
