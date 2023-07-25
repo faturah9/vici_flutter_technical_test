@@ -4,6 +4,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 
 import '../../resources/colors.dart';
 import '../discover/presentation/pages/discover_page.dart';
+import '../profile/presentation/pages/profile_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -31,11 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
             onPageChanged: (index) {
               setState(() => _currentIndex = index);
             },
-            children: <Widget>[
-              const DiscoverPage(),
-              Container(color: Colors.deepPurpleAccent),
-              Container(color: Colors.greenAccent),
-              Container(color: Colors.yellowAccent),
+            children: const <Widget>[
+              DiscoverPage(),
+              ProfilePage(),
               // _discoverScreen!,
               // _wishlist!,
               // _cartScreen!,
