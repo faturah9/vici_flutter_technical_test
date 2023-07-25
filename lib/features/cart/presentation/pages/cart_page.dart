@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:vici_technical_test/features/cart/domain/datas/models/process_item_model.dart';
 import 'package:vici_technical_test/features/cart/presentation/cubit/cart_cubit.dart';
 
@@ -44,8 +45,170 @@ class _CartPageState extends State<CartPage> {
           previous.listProcessCartModel != current.listProcessCartModel,
       builder: (context, state) {
         if (state is CartLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
+          return Scaffold(
+            appBar: AppBar(
+              surfaceTintColor: Colors.white,
+              title: Text(
+                'Cart',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: 26.sp,
+                ),
+              ),
+              backgroundColor: Colors.white,
+              centerTitle: true,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios),
+                onPressed: () => Navigator.pop(context),
+              ),
+              elevation: 0,
+              actions: [
+                // GeneratePdf(state.listProcessCartModel!),
+                Padding(
+                  padding: EdgeInsets.only(right: 16.w),
+                  child: Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: SizedBox(
+                      height: 20.h,
+                      width: 20.w,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(3),
+                          color: AppColors.grey,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            body: Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              color: AppColors.white,
+              padding: EdgeInsets.only(left: 20.w, right: 20.w),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    AlignedGridView.count(
+                      shrinkWrap: true,
+                      physics: const ScrollPhysics(),
+                      crossAxisCount: 1,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      itemCount: 10,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            decoration: BoxDecoration(
+                              color: AppColors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.gray.withOpacity(0.5),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: Row(
+                                children: [
+                                  Shimmer.fromColors(
+                                    baseColor: Colors.grey[300]!,
+                                    highlightColor: Colors.grey[100]!,
+                                    child: SizedBox(
+                                      height: 100.h,
+                                      width: 100.w,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: AppColors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 8.h),
+
+                                  ///shimmer
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        children: [
+                                          Shimmer.fromColors(
+                                            baseColor: Colors.grey[300]!,
+                                            highlightColor: Colors.grey[100]!,
+                                            child: SizedBox(
+                                              height: 20.h,
+                                              width: 100.w,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  color: AppColors.grey,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 4.h),
+
+                                          ///shimmer
+                                          Shimmer.fromColors(
+                                            baseColor: Colors.grey[300]!,
+                                            highlightColor: Colors.grey[100]!,
+                                            child: SizedBox(
+                                              height: 20.h,
+                                              width: 100.w,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  color: AppColors.grey,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 4.h),
+
+                                          ///shimmer
+                                          Shimmer.fromColors(
+                                            baseColor: Colors.grey[300]!,
+                                            highlightColor: Colors.grey[100]!,
+                                            child: SizedBox(
+                                              height: 20.h,
+                                              width: 100.w,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  color: AppColors.grey,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 8.h),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ),
           );
         }
         return state.listProcessCartModel!.isEmpty
@@ -74,7 +237,10 @@ class _CartPageState extends State<CartPage> {
                   ),
                   elevation: 0,
                   actions: [
-                    GeneratePdf(state.listProcessCartModel!),
+                    Padding(
+                      padding: EdgeInsets.only(right: 16.w),
+                      child: GeneratePdf(state.listProcessCartModel!),
+                    ),
                   ],
                 ),
                 body: Container(
@@ -209,7 +375,7 @@ class _GeneratePdfState extends State<GeneratePdf> {
       icon: const Icon(Icons.picture_as_pdf),
       onPressed: () {
         // sl<CartCubit>().generatePdfEvent();
-        pdfInvoice(widget.list!);
+        pdfInvoice(widget.list);
       },
     );
   }
@@ -369,5 +535,7 @@ class _GeneratePdfState extends State<GeneratePdf> {
     final file = File('${output.path}/my_pdf.pdf');
     await file.writeAsBytes(await pdf.save());
     print('PDF saved to ${file.path}');
+
+    PdfApi.openFile(file);
   }
 }
